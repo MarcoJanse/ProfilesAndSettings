@@ -28,7 +28,7 @@
         "defaults":
         {
             // Put settings here that you want to apply to all profiles.
-            "fontFace": "Cascadia Code PL",
+            "fontFace": "CaskaydiaCove Nerd Font",
             "fontSize": 12
         },
         "list":
@@ -36,10 +36,14 @@
             {
                 // Make changes here to the powershell.exe profile.
                 "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
-                "colorScheme": "Campbell Powershell",
                 "name": "Windows PowerShell",
+                "colorScheme": "Campbell Powershell",
                 "commandline": "powershell.exe",
-                "hidden": false
+                "hidden": false,
+                "backgroundImage": "C:/Users/MarcoJanseReferit/OneDrive - Referit B.V/Pictures/Logos/PowerShell_5.0_icon.png",
+                "backgroundImageStretchMode": "none",
+                "backgroundImageAlignment": "bottomRight",
+                "backgroundImageOpacity" : 0.5
             },
             {
                 // Make changes here to the cmd.exe profile.
@@ -53,13 +57,23 @@
 				"colorScheme": "Tango Dark",
                 "hidden": false,
                 "name": "PowerShell",
-                "source": "Windows.Terminal.PowershellCore"
+                "source": "Windows.Terminal.PowershellCore",
+                "backgroundImage": "C:/Users/MarcoJanseReferit/OneDrive - Referit B.V/Pictures/Logos/PS_avatar.png",
+                "backgroundImageStretchMode": "none",
+                "backgroundImageAlignment": "bottomRight",
+                "backgroundImageOpacity" : 0.5
             },
             {
                 "guid": "{b453ae62-4e3d-5e58-b989-0a998ec441b8}",
                 "hidden": false,
                 "name": "Azure Cloud Shell",
                 "source": "Windows.Terminal.Azure"
+            },
+            {
+                "guid": "{07b52e3e-de2c-5db4-bd2d-ba144ed6c273}",
+                "hidden": false,
+                "name": "Ubuntu-20.04",
+                "source": "Windows.Terminal.Wsl"
             }
         ]
     },
