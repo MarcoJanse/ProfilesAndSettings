@@ -1,11 +1,12 @@
 <#
   PowerShell 7 VSCode Profile
   Marco Janse
-  v2.0
-  2021-04-10
+  v2.1
+  2021-04-27
 
   Version History:
 
+  2.1 - Minor reordering and tidy-up
   2.0 - Font and PoshGui theme changes + cleanup + uniformation
   1.0 - first version for PowerShell 7
  
@@ -51,23 +52,7 @@ function Add-VMtagProperty
 ## End VMware PowerCli
 
 
-## Console
-
- # Enable PoshGui Theme, font and Terminal Icons
- # Requires the following:
- # 1. Download and install 'CaskaydiaCove Nerd Font' from https://www.nerdfonts.com/font-downloads
- # 2. Install-Module posh-git -Scope CurrentUser
- # 3. Install-Module oh-my-posh -Scope CurrentUser
- # 4. Install-Module PSReadLine -Scope CurrentUser  (for PS7)
- # 5. Install-Module Terminal-Icons -Scope CurrentUser
- 
-Import-Module posh-git
-Import-Module oh-my-posh
-Set-PoshPrompt paradox
-Import-Module Terminal-Icons
-
-
-# Get-Uptime Function
+## Get-Uptime Function
 Function Get-Uptime {
     Param ( [string] $ComputerName = $env:COMPUTERNAME )
     $os = Get-CimInstance win32_operatingsystem -ComputerName $ComputerName -ErrorAction SilentlyContinue
@@ -156,7 +141,7 @@ function Edit-HostsFile
       $ProtocolStatus.Add("KeyLength", $null)
       $ProtocolStatus.Add("SignatureAlgorithm", $null)
 
-      $ProtocolNames | %{
+      $ProtocolNames | ForEach-Object {
         $ProtocolName = $_
         $Socket = New-Object System.Net.Sockets.Socket([System.Net.Sockets.SocketType]::Stream, [System.Net.Sockets.ProtocolType]::Tcp)
         $Socket.Connect($ComputerName, $Port)
@@ -174,7 +159,7 @@ function Edit-HostsFile
           $SslStream.Close()
         }
       }
-      [PSCustomObject]$ProtocolStatus
+      [PSCustomObject] $ProtocolStatus
     }
   }
 
@@ -183,6 +168,21 @@ function Edit-HostsFile
 
 ### Functions End ###
 
+
+### Console
+
+ # Enable PoshGui Theme, font and Terminal Icons
+ # Requires the following:
+ # 1. Download and install 'CaskaydiaCove Nerd Font' from https://www.nerdfonts.com/font-downloads
+ # 2. Install-Module posh-git -Scope CurrentUser
+ # 3. Install-Module oh-my-posh -Scope CurrentUser
+ # 4. Install-Module PSReadLine -Scope CurrentUser  (for PS7)
+ # 5. Install-Module Terminal-Icons -Scope CurrentUser
+ 
+ Import-Module posh-git
+ Import-Module oh-my-posh
+ Set-PoshPrompt paradox
+ Import-Module Terminal-Icons
 
 # Set formatting Enumeration Unlimited
 
