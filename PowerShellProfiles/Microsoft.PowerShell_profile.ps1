@@ -1,11 +1,12 @@
 <#
   PowerShell 7 Profile
   Marco Janse
-  v2.1
-  2021-04-27
+  v2.2
+  2021-07-02
 
   Version History:
 
+  2.2 - Cleaned up version
   2.1 - Minor reordering and tidy-up
   2.0 - Font and PoshGui theme changes + cleanup + uniformation
   1.1 - simplified the Get-Uptime function for modern PS and OS versions
@@ -51,29 +52,6 @@
     }
  
  ## End VMware PowerCli
-
- 
- 
-## Get-Uptime Function
-Function Get-Uptime {
-  Param ( [string] $ComputerName = $env:COMPUTERNAME )
-  $os = Get-CimInstance win32_operatingsystem -ComputerName $ComputerName -ErrorAction SilentlyContinue
-  if ($os.LastBootUpTime) {
-      $uptime = (Get-Date) - $os.LastBootUpTime
-      Write-Host ("Last boot: " + $($os.LastBootUpTime) )
-      Write-Host ("Uptime   : " + $uptime.Days + " Days " + $uptime.Hours + " Hours " + $uptime.Minutes + " Minutes" )
-}
-  else {
-      Write-Warning "Unable to connect to $computername"
-}
-}
-# Get-Uptime
-   
-   function Get-FortisslIPAddress {
-   
-     Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.InterfaceAlias -eq 'fortissl' }
-   
-   }
    
    function Edit-HostsFile
    {
@@ -190,7 +168,7 @@ Function Get-Uptime {
 $FormatEnumerationLimit = -1
 
 # STARTING POINT
-Set-Location $HOME
+Set-Location C:\
 
 # Chocolatey profile
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
