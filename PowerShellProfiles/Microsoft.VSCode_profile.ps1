@@ -1,11 +1,12 @@
 <#
   PowerShell 7 VSCode Profile
   Marco Janse
-  v2.1
-  2021-04-27
+  v2.2
+  2021-07-04
 
   Version History:
 
+  2.2 - Cleaned up version July 2021
   2.1 - Minor reordering and tidy-up
   2.0 - Font and PoshGui theme changes + cleanup + uniformation
   1.0 - first version for PowerShell 7
@@ -13,73 +14,51 @@
 
  #>
 
-### Aliases ###
+ ### Aliases ###
 
-$Git = 'C:\Git\GitHub\MarcoJanse\'
+ $Git = 'C:\Git\GitHub\MarcoJanse\'
 
+ 
+ ### Modules ###
+ 
+ ### Functions ###
+ 
+ ## VMware PowerCli
+ 
+ function Get-SnapShotOverview {
+   Get-VM | Get-SnapShot | Format-Table name,VM,Created,SizeGB -AutoSize
+ }
+ 
+ Function Get-VMConnectedIso {
+ 
+   Get-VM | Where-Object { $_ | Get-CDDrive | Where-Object { $_.ConnectionState.Connected -eq "true" -And $_.ISOPath -Like "*.iso*"} } | Select-Object Name, @{Name=".ISO Path";Expression={(Get-CDDrive $_).isopath }}
+ }
+ 
+ function Set-VMNotes {
+   $VM = Read-Host -Prompt 'Enter the Virtual Machine name'
+   $Notes = Read-Host -Prompt 'Enter the notes for the VM'
+   Set-VM -VM $VM -Notes $Notes
+ }
+ 
+ function Get-VMToolsVersion {
+   $VM = Read-Host -Prompt 'Enter the Virtual Machine name'
+   (Get-VM $VM).Guest.ToolsVersion
+ }
 
-### Modules ###
-
-### Functions ###
-
-## VMware PowerCli
-
-function Get-SnapShotOverview {
-    Get-VM | Get-SnapShot | Format-Table name,VM,Created,SizeGB -AutoSize
-}
-
-Function Get-VMConnectedIso {
-
-    Get-VM | Where-Object { $_ | Get-CDDrive | Where-Object { $_.ConnectionState.Connected -eq "true" -And $_.ISOPath -Like "*.iso*"} } | Select-Object Name, @{Name=".ISO Path";Expression={(Get-CDDrive $_).isopath }}
-}
-
-function Set-VMNotes {
-  $VM = Read-Host -Prompt 'Enter the Virtual Machine name'
-  $Notes = Read-Host -Prompt 'Enter the notes for the VM'
-  Set-VM -VM $VM -Notes $Notes
-}
-
-function Get-VMToolsVersion {
-  $VM = Read-Host -Prompt 'Enter the Virtual Machine name'
-  (Get-VM $VM).Guest.ToolsVersion
-}
-
-function Add-VMtagProperty
+ function Add-VMtagProperty
  {
     New-VIProperty -Name Tag -ObjectType VirtualMachine -Value { Get-TagAssignment -Entity $args[0] | Select-Object -ExpandProperty Tag }
     }
-
-## End VMware PowerCli
-
-
-## Get-Uptime Function
-Function Get-Uptime {
-    Param ( [string] $ComputerName = $env:COMPUTERNAME )
-    $os = Get-CimInstance win32_operatingsystem -ComputerName $ComputerName -ErrorAction SilentlyContinue
-    if ($os.LastBootUpTime) {
-        $uptime = (Get-Date) - $os.LastBootUpTime
-        Write-Host ("Last boot: " + $($os.LastBootUpTime) )
-        Write-Host ("Uptime   : " + $uptime.Days + " Days " + $uptime.Hours + " Hours " + $uptime.Minutes + " Minutes" )
-  }
-    else {
-        Write-Warning "Unable to connect to $computername"
-  }
-}
-# Get-Uptime
-
-function Get-FortisslIPAddress {
-
-    Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.InterfaceAlias -eq 'fortissl' }
-
-}
-
-function Edit-HostsFile
-{
-   param($ComputerName=$env:COMPUTERNAME)
-
-   Start-Process notepad.exe -ArgumentList \\$ComputerName\admin$\System32\drivers\etc\hosts -Verb RunAs
-}
-
+ 
+ ## End VMware PowerCli
+   
+   function Edit-HostsFile
+   {
+    param($ComputerName=$env:COMPUTERNAME)
+   
+    Start-Process notepad.exe -ArgumentList \\$ComputerName\admin$\System32\drivers\etc\hosts -Verb RunAs
+   }
+ 
 
 ## Test SSL Protocols ##
 
@@ -124,53 +103,52 @@ function Edit-HostsFile
    Tls12              : True
  #>
  function Test-SslProtocols {
-    param(
-      [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ValueFromPipeline=$true)]
-      $ComputerName,
+  param(
+    [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ValueFromPipeline=$true)]
+    $ComputerName,
 
-      [Parameter(ValueFromPipelineByPropertyName=$true)]
-      [int]$Port = 443
-    )
-    begin {
-      $ProtocolNames = [System.Security.Authentication.SslProtocols] | Get-Member -static -MemberType Property | Where-Object {$_.Name -notin @("Default","None")} | ForEach-Object {$_.Name}
-    }
-    process {
-      $ProtocolStatus = [Ordered]@{}
-      $ProtocolStatus.Add("ComputerName", $ComputerName)
-      $ProtocolStatus.Add("Port", $Port)
-      $ProtocolStatus.Add("KeyLength", $null)
-      $ProtocolStatus.Add("SignatureAlgorithm", $null)
-
-      $ProtocolNames | ForEach-Object {
-        $ProtocolName = $_
-        $Socket = New-Object System.Net.Sockets.Socket([System.Net.Sockets.SocketType]::Stream, [System.Net.Sockets.ProtocolType]::Tcp)
-        $Socket.Connect($ComputerName, $Port)
-        try {
-          $NetStream = New-Object System.Net.Sockets.NetworkStream($Socket, $true)
-          $SslStream = New-Object System.Net.Security.SslStream($NetStream, $true)
-          $SslStream.AuthenticateAsClient($ComputerName,  $null, $ProtocolName, $false )
-          $RemoteCertificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]$SslStream.RemoteCertificate
-          $ProtocolStatus["KeyLength"] = $RemoteCertificate.PublicKey.Key.KeySize
-          $ProtocolStatus["SignatureAlgorithm"] = $RemoteCertificate.PublicKey.Key.SignatureAlgorithm.Split("#")[1]
-          $ProtocolStatus.Add($ProtocolName, $true)
-        } catch  {
-          $ProtocolStatus.Add($ProtocolName, $false)
-        } finally {
-          $SslStream.Close()
-        }
-      }
-      [PSCustomObject] $ProtocolStatus
-    }
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [int]$Port = 443
+  )
+  begin {
+    $ProtocolNames = [System.Security.Authentication.SslProtocols] | Get-Member -static -MemberType Property | Where-Object {$_.Name -notin @("Default","None")} | ForEach-Object {$_.Name}
   }
+  process {
+    $ProtocolStatus = [Ordered]@{}
+    $ProtocolStatus.Add("ComputerName", $ComputerName)
+    $ProtocolStatus.Add("Port", $Port)
+    $ProtocolStatus.Add("KeyLength", $null)
+    $ProtocolStatus.Add("SignatureAlgorithm", $null)
+
+    $ProtocolNames | ForEach-Object {
+      $ProtocolName = $_
+      $Socket = New-Object System.Net.Sockets.Socket([System.Net.Sockets.SocketType]::Stream, [System.Net.Sockets.ProtocolType]::Tcp)
+      $Socket.Connect($ComputerName, $Port)
+      try {
+        $NetStream = New-Object System.Net.Sockets.NetworkStream($Socket, $true)
+        $SslStream = New-Object System.Net.Security.SslStream($NetStream, $true)
+        $SslStream.AuthenticateAsClient($ComputerName,  $null, $ProtocolName, $false )
+        $RemoteCertificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]$SslStream.RemoteCertificate
+        $ProtocolStatus["KeyLength"] = $RemoteCertificate.PublicKey.Key.KeySize
+        $ProtocolStatus["SignatureAlgorithm"] = $RemoteCertificate.PublicKey.Key.SignatureAlgorithm.Split("#")[1]
+        $ProtocolStatus.Add($ProtocolName, $true)
+      } catch  {
+        $ProtocolStatus.Add($ProtocolName, $false)
+      } finally {
+        $SslStream.Close()
+      }
+    }
+    [PSCustomObject] $ProtocolStatus
+  }
+}
 
 ## Test SSL Protocols End ##
 
 
-### Functions End ###
+ ### Functions End ###
 
-
-### Console
-
+ ### Console
+ 
  # Enable PoshGui Theme, font and Terminal Icons
  # Requires the following:
  # 1. Download and install 'CaskaydiaCove Nerd Font' from https://www.nerdfonts.com/font-downloads
@@ -178,7 +156,7 @@ function Edit-HostsFile
  # 3. Install-Module oh-my-posh -Scope CurrentUser
  # 4. Install-Module PSReadLine -Scope CurrentUser  (for PS7)
  # 5. Install-Module Terminal-Icons -Scope CurrentUser
- 
+
  Import-Module posh-git
  Import-Module oh-my-posh
  Set-PoshPrompt paradox
@@ -189,7 +167,7 @@ function Edit-HostsFile
 $FormatEnumerationLimit = -1
 
 # STARTING POINT
-Set-Location C:\Git\
+Set-Location C:\
 
 # Chocolatey profile
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
