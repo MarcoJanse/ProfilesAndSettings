@@ -1,11 +1,13 @@
 <#
   PowerShell 7 Profile
   Marco Janse
-  v2.2
-  2021-07-02
+  v2.4
+  2022-05-24
 
   Version History:
 
+  2.4 - Updated Oh-My-Posh from PS module to the Winget package
+  2.3 - Changed posh theme to slim
   2.2 - Cleaned up version
   2.1 - Minor reordering and tidy-up
   2.0 - Font and PoshGui theme changes + cleanup + uniformation
@@ -150,17 +152,16 @@
 
  ### Console
  
- # Enable PoshGui Theme, font and Terminal Icons
+ # Enable Oh-My-Posh Theme, font and Terminal Icons
  # Requires the following:
  # 1. Download and install 'CaskaydiaCove Nerd Font' from https://www.nerdfonts.com/font-downloads
- # 2. Install-Module posh-git -Scope CurrentUser
- # 3. Install-Module oh-my-posh -Scope CurrentUser
+ # 2. winget install oh-my-posh
+ # 3. Add the following line to PS profile: oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\slim.omp.json" | Invoke-Expression
  # 4. Install-Module PSReadLine -Scope CurrentUser  (for PS7)
  # 5. Install-Module Terminal-Icons -Scope CurrentUser
 
  Import-Module posh-git
- Import-Module oh-my-posh
- Set-PoshPrompt paradox
+ oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\slim.omp.json" | Invoke-Expression
  Import-Module Terminal-Icons
 
 # Set formatting Enumeration Unlimited

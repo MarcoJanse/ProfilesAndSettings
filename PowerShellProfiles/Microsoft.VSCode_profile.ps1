@@ -1,11 +1,13 @@
 <#
   PowerShell 7 VSCode Profile
   Marco Janse
-  v2.2
-  2021-07-04
+  v2.4
+  2022-05-24
 
   Version History:
 
+  2.4 - Updated Oh-My-Posh from PS module to the Winget package
+  2.3 - Changed poshprompt to slim
   2.2 - Cleaned up version July 2021
   2.1 - Minor reordering and tidy-up
   2.0 - Font and PoshGui theme changes + cleanup + uniformation
@@ -158,8 +160,7 @@
  # 5. Install-Module Terminal-Icons -Scope CurrentUser
 
  Import-Module posh-git
- Import-Module oh-my-posh
- Set-PoshPrompt paradox
+ oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\slim.omp.json" | Invoke-Expression
  Import-Module Terminal-Icons
 
 # Set formatting Enumeration Unlimited
