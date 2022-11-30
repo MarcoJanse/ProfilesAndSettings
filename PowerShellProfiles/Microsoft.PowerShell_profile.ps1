@@ -1,11 +1,12 @@
 <#
   PowerShell 7 Profile
   Marco Janse
-  v2.4
-  2022-05-24
+  v2.5
+  2022-08-16
 
   Version History:
 
+  2.5 - Added Get-DynamicParameters function
   2.4 - Updated Oh-My-Posh from PS module to the Winget package
   2.3 - Changed posh theme to slim
   2.2 - Cleaned up version
@@ -26,6 +27,17 @@
  
  ### Functions ###
  
+ ## PowerShell Core
+
+ function Get-DynamicParameters
+ {
+     param ($Cmdlet, $PSDrive)
+     (Get-Command -Name $Cmdlet -ArgumentList $PSDrive).ParameterSets |
+       ForEach-Object {$_.Parameters} |
+         Where-Object { $_.IsDynamic } |
+           Select-Object -Property Name -Unique
+ }
+
  ## VMware PowerCli
  
  function Get-SnapShotOverview {
