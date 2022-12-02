@@ -44,8 +44,15 @@ wsl --install
 ### Hashtable with apps
 
 $apps = @(
-    @{ name = "7zip.7zip" }, 
-    @{ name = "Microsoft.AzureCLI"}
+    @{name = "7zip.7zip"},
+    @{name = "dropbox.dropbox"},
+    @{name = "Foxit.FoxitReader"},
+    @{name = "git.git"},
+    @{name = "KeePassXCTeam.KeePassXC"},
+    @{name = "Microsoft.AzureCLI"},
+    @{name = "Microsoft.GitCredentialManagerCore"},
+    @{name = "Microsoft.VisualStudioCode"},
+    @{name = "Rizonesoft.Notepad3"}
 )
 
 Write-Output "Installing application using WinGet"
