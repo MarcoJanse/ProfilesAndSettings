@@ -8,31 +8,36 @@
 .NOTES
   Win11PostInstall.ps1
   Marco Janse
-  v0.1
-  2022-11-30
+  v1.0
+  2022-12-04
 
   Version History:
 
+  1.0 - Tested version on my work laptop
   0.1 - Initial draft
 .LINK
     https://github.com/MarcoJanse/ProfilesAndSettings/WindowsDeployment/Win11Postinstall.ps1
 .EXAMPLE
-    Explanation of the function or its result. You can include multiple examples with additional .EXAMPLE lines
+    .\Win11PostInstall.ps1
+
+    Runs the script without any parameters
 #>
 
-## Check if OS is Windows 11 
+## Check if OS is Windows 10 or 11
+### Windows 11 currently still shows Windows 10 as ProductName in the registry for compatibility issues.
 
-if  ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ProductName).ProductName -notmatch 'Windows 11') {
-    Write-Output "This Windows version is not Windows 11, and therefore will not proceed"
+if  ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ProductName).ProductName -notmatch 'Windows 10' -or 
+    (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ProductName).ProductName -notmatch 'Windows 11') {
+    Write-Output "This Windows version is not Windows 10 or 11, and therefore will not proceed"
     exit
-}
+ }
 
 ## Check if OS is 22H2 build
 
 if  ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name DisplayVersion).DisplayVersion -ne '22H2') {
     Write-Output "This Windows version build is not 22H2, and therefore will not proceed"
     exit
-}
+ }
 
 ## Install WSL
 
@@ -44,15 +49,31 @@ wsl --install
 ### Hashtable with apps
 
 $apps = @(
-    @{name = "7zip.7zip"},
-    @{name = "dropbox.dropbox"},
-    @{name = "Foxit.FoxitReader"},
-    @{name = "git.git"},
-    @{name = "KeePassXCTeam.KeePassXC"},
-    @{name = "Microsoft.AzureCLI"},
-    @{name = "Microsoft.GitCredentialManagerCore"},
-    @{name = "Microsoft.VisualStudioCode"},
-    @{name = "Rizonesoft.Notepad3"}
+    @{ name = "7zip.7zip" },
+    @{ name = "Apple.iTunes" },
+    @{ name = "Docker.DockerDesktop" },
+    @{ name = "dropbox.dropbox" },
+    @{ name = "flux.flux" },
+    @{ name = "Foxit.FoxitReader" },
+    @{ name = "git.git" },
+    @{ name = "GnuPG.Gpg4win" },
+    @{ name = "Google.Chrome" },
+    @{ name = "JAMSoftware.TreeSize.Free" },
+    @{ name = "JanDeDobbeleer.OhMyPosh" },
+    @{ name = "KeePassXCTeam.KeePassXC" },
+    @{ name = "Microsoft.AzureCLI" },
+    @{ name = "Microsoft.AzureStorageExplorer" },
+    @{ name = "Microsoft.Bicep" },
+    @{ name = "Microsoft.GitCredentialManagerCore" },
+    @{ name = "Microsoft.PowerToys" },
+    @{ name = "Microsoft.SQLServerManagementStudio" },
+    @{ name = "Microsoft.VisualStudioCode" },
+    @{ name = "OpenSight.FlashFXP" },
+    @{ name = "Rizonesoft.Notepad3" },
+    @{ name = "Sonos.Controller" },
+    @{ name = "WinSCP.WinSCP" },
+    @{ name = "Yubico.Authenticator" },
+    @{ name = "Yubico.YubikeyManager" }
 )
 
 Write-Output "Installing application using WinGet"
@@ -64,12 +85,12 @@ Foreach ($app in $apps) {
         Write-host "Installing:" $app.name
         if ($null -ne $app.source) {
             winget install --exact --silent $app.name --source $app.source
-        }
+         }
         else {
             winget install --exact --silent $app.name 
-        }
-    }
+         }
+     }
     else {
         Write-host "Skipping Install of " $app.name
-    }
-}
+     }
+ }
