@@ -59,6 +59,7 @@ $apps = @(
     @{ name = "GnuPG.Gpg4win" },
     @{ name = "Google.Chrome" },
     @{ name = "JAMSoftware.TreeSize.Free" },
+    @{ name = "JGraph.Draw"},
     @{ name = "JanDeDobbeleer.OhMyPosh" },
     @{ name = "KeePassXCTeam.KeePassXC" },
     @{ name = "Microsoft.AzureCLI" },
