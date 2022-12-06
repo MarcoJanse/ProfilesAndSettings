@@ -1,7 +1,8 @@
 # ProfilesAndSettings
 
 This Repository contains all my PowerShell profiles, VSCode settings and Windows Terminal settings.
-It might contain other stuff in the future, but it's basically used for the configuration of all my code editing tools.
+There are also some scripts to install my favorite applications and PowerShell modules.
+It might contain other stuff in the future, but it's basically used for the configuration of my computer and all my code editing tools.
 
 ## Installation
 The PowerShell profiles can be used in PowerShell by editing, replacing your own PowerShell profile. You can find the location and name of your profile by typing `$PROFILE` in your PowerShell session. 
