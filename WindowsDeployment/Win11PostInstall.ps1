@@ -8,11 +8,12 @@
 .NOTES
   Win11PostInstall.ps1
   Marco Janse
-  v1.0
-  2022-12-04
+  v1.1
+  2022-12-17
 
   Version History:
 
+  1.1 - Added apps
   1.0 - Tested version on my work laptop
   0.1 - Initial draft
 .LINK
@@ -70,11 +71,13 @@ $apps = @(
     @{ name = "Microsoft.SQLServerManagementStudio" },
     @{ name = "Microsoft.VisualStudioCode" },
     @{ name = "OpenSight.FlashFXP" },
+    @{ name = "Postman.Postman"},
     @{ name = "Rizonesoft.Notepad3" },
     @{ name = "Sonos.Controller" },
     @{ name = "WinSCP.WinSCP" },
     @{ name = "Yubico.Authenticator" },
-    @{ name = "Yubico.YubikeyManager" }
+    @{ name = "Yubico.YubikeyManager" },
+    @{ name = "WhatsApp.WhatsApp"}
 )
 
 Write-Output "Installing application using WinGet"
