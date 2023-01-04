@@ -1,11 +1,12 @@
 <#
   PowerShell 7 VSCode Profile
   Marco Janse
-  v2.6
-  2022-12-13
+  v2.7
+  2023-01-04
 
   Version History:
 
+  2.7 - Added/changed git variables for workdirs and formatting changes
   2.6 - Removed starting working dir and FormatEnumerationLimit settings
   2.5 - Added Get-DynamicParameters function
   2.4 - Updated Oh-My-Posh from PS module to the Winget package
@@ -20,8 +21,11 @@
 
  ### Aliases ###
 
- $Git = 'C:\Git\GitHub\MarcoJanse\'
+ ### Custom Variables ###
 
+ $Git = 'C:\Git\'
+ $GitHub = 'C:\Git\GitHub\MarcoJanse\'
+ $AzDevOps = 'C:\Git\AzDevOps'
  
  ### Modules ###
  

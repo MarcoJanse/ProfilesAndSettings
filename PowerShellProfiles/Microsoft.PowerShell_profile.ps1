@@ -1,11 +1,12 @@
 <#
   PowerShell 7 Profile
   Marco Janse
-  v2.6
-  2022-12-13
+  v2.7
+  2023-01-04
 
   Version History:
 
+  2.7 - Added/changed git variables for workdirs and formatting changes
   2.6 - Changed starting working dir and removed FormatEnumerationLimit settings
   2.5 - Added Get-DynamicParameters function
   2.4 - Updated Oh-My-Posh from PS module to the Winget package
@@ -21,7 +22,11 @@
  
  ### Aliases ###
 
- $Git = 'C:\Git\GitHub\MarcoJanse\'
+ ### Custom Variables ###
+
+ $Git = 'C:\Git\'
+ $GitHub = 'C:\Git\GitHub\MarcoJanse\'
+ $AzDevOps = 'C:\Git\AzDevOps'
 
  
  ### Modules ###
@@ -160,7 +165,6 @@
 
 ## Test SSL Protocols End ##
 
-
  ### Functions End ###
 
  ### Console
@@ -176,9 +180,6 @@
  Import-Module posh-git
  oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\slim.omp.json" | Invoke-Expression
  Import-Module Terminal-Icons
-
-# STARTING POINT
-Set-Location $Git
 
 # Chocolatey profile
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
