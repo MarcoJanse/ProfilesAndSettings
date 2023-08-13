@@ -1,11 +1,12 @@
 <#
   PowerShell 7 Profile
   Marco Janse
-  v2.8
-  2023-08-12
+  v2.9
+  2023-08-13
 
   Version History:
 
+  2.9 - Revert back to Inline view of PSReadLine predictionViewStyle
   2.8 - Added some new functions and some housekeeping
   2.7 - Added/changed git variables for workdirs and formatting changes
   2.6 - Changed starting working dir and removed FormatEnumerationLimit settings
@@ -400,7 +401,7 @@ Import-Module Terminal-Icons
 ## PSReadline
 Set-PSReadLineKeyHandler -Chord UpArrow -Function HistorySearchBackward
 Set-PSReadLineOption -PredictionSource HistoryAndPlugin
-Set-PSReadLineOption -PredictionViewStyle ListView
+Set-PSReadLineOption -PredictionViewStyle InlineView
 
 ## AzToolsPredictor
 Import-Module Az.Tools.Predictor
