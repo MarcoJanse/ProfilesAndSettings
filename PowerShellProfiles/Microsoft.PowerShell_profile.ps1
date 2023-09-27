@@ -1,11 +1,12 @@
 <#
   PowerShell 7 Profile
   Marco Janse
-  v2.9
-  2023-08-13
+  v3.0
+  2023-08-18
 
   Version History:
 
+  3.0 - added function Remove-OldModules
   2.9 - Revert back to Inline view of PSReadLine predictionViewStyle
   2.8 - Added some new functions and some housekeeping
   2.7 - Added/changed git variables for workdirs and formatting changes
@@ -45,6 +46,26 @@
          Where-Object { $_.IsDynamic } |
            Select-Object -Property Name -Unique
  }
+
+ ## Remove old modules
+
+ function Remove-OldModules
+{
+  <#
+<#
+    Author: Luke Murray (Luke.Geek.NZ)
+    Version: 0.1
+    Purpose: Basic function to remove old PowerShell modules which are installed
+#>
+
+  #>
+  $Latest = Get-InstalledModule 
+  foreach ($module in $Latest) { 
+    
+    Write-Verbose -Message "Uninstalling old versions of $($module.Name) [latest is $( $module.Version)]" -Verbose
+    Get-InstalledModule -Name $module.Name -AllVersions | Where-Object {$_.Version -ne $module.Version} | Uninstall-Module -Verbose 
+  }
+}
 
  ## VMware PowerCli
  
