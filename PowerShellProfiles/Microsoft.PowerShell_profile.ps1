@@ -1,11 +1,16 @@
 <#
   PowerShell 7 Profile
   Marco Janse
-  v3.1
-  2023-09-27
+  v4.0
+  2024-06-14
 
   Version History:
 
+  4.0 - Refactor:
+    - Remove PowerShellGet related functions Find-ModuleUpdates/Remove-OldModules, as PS7 now uses PSResourceGet
+    - Remove PowerCli related functions, as I don't use PowerCli anymore
+    - Formatting changes
+  3.2 - Git path changes
   3.1 - added function Find-ModuleUpdates
   3.0 - added function Remove-OldModules
   2.9 - Revert back to Inline view of PSReadLine predictionViewStyle
@@ -28,9 +33,9 @@
 
 # Custom Variables #
 
-$Git = 'C:\Git\'
-$GitHub = 'C:\Git\GitHub\MarcoJanse\'
-$AzDevOps = 'C:\Git\AzDevOps'
+$Git = 'X:\Git\'
+$GitHub = 'X:\Git\GitHub\MarcoJanse\'
+$AzDevOps = 'X:\Git\AzDevOps'
 
  
 # Modules #
@@ -39,130 +44,25 @@ $AzDevOps = 'C:\Git\AzDevOps'
  
 ## PowerShell Core
 
+## Get dynamic parameters
 function Get-DynamicParameters {
   param ($Cmdlet, $PSDrive)
      (Get-Command -Name $Cmdlet -ArgumentList $PSDrive).ParameterSets |
-  ForEach-Object { $_.Parameters } |
-  Where-Object { $_.IsDynamic } |
-  Select-Object -Property Name -Unique
+      ForEach-Object { $_.Parameters } |
+        Where-Object { $_.IsDynamic } |
+          Select-Object -Property Name -Unique
 }
 
-## Remove old modules
 
-function Remove-OldModules {
-<#
-  Author: Luke Murray (Luke.Geek.NZ)
-  Version: 0.1
-  Purpose: Basic function to remove old PowerShell modules which are installed
-#>
-
-  $Latest = Get-InstalledModule 
-  foreach ($module in $Latest) { 
-    
-    Write-Verbose -Message "Uninstalling old versions of $($module.Name) [latest is $( $module.Version)]" -Verbose
-    Get-InstalledModule -Name $module.Name -AllVersions | Where-Object { $_.Version -ne $module.Version } | Uninstall-Module -Verbose 
-  }
-}
-
-## Find Module Updates
-<#
-  Author: Harm Veenstra
-  Version: 2023-09-25
-  Source: https://github.com/HarmVeenstra/Powershellisfun/blob/main/Check%20for%20PowerShell%20modules%20updates/Find-ModuleUpdates.ps1
-#>
-
-function Find-ModuleUpdates {
-  [CmdletBinding()]
-
-  # Parameter for filtering modules for specific pattern, e.g. *Graph*
-  param (
-    [Parameter(Mandatory = $false)][string]$NameFilter = '*'
-  )
-
-  #Retrieve all installed modules
-  Write-Host ("Retrieving installed PowerShell modules") -ForegroundColor Green
-  $InstalledModules = Get-InstalledModule -Name $NameFilter -ErrorAction SilentlyContinue
-
-  #Start checking for updates if $InstalledModules is greater than 1
-  if ($InstalledModules.Count -gt 0) {
-    $number = 1
-    #Loop through all modules and check for newer versions and add those to $total
-    Write-Host ("Checking for updated versions") -ForegroundColor Green
-    $total = foreach ($module in $InstalledModules) {
-      Write-Progress ("[{0}/{1} Checking module {2}" -f $number, $InstalledModules.count, $module.name)
-      try {
-        $PsgalleryModule = Find-Module -Name $Module.Name -ErrorAction Stop
-        if ([version]$module.version -lt [version]$PsgalleryModule.version) {
-          [PSCustomObject]@{
-            Repository          = $module.Repository
-            'Module name'       = $module.Name
-            'Installed version' = $module.Version
-            'Latest version'    = $PsgalleryModule.version
-            'Published on'      = $PsgalleryModule.PublishedDate
-          }
-        }
-      }
-      catch {
-        Write-Warning ("Could not find module {0}" -f $module.Name)
-      }
-      $number++
-    }
-  }
-  else {
-    Write-Warning ("No modules were found to check for updates, please check yourNameFilter. Exiting...")
-    return
-  }
-
-  #Output $total to display updates for installed modules if any
-  if ($total.Count -gt 0) {
-    Write-Host ("Found {0} updated modules" -f $total.Count) -ForegroundColor Green
-    $total | Format-Table -AutoSize
-  }
-  else {
-    Write-Host ("No updated modules were found")
-  }
-
-} 
-
-## End Find-ModuleUpdates
-
-## VMware PowerCli
- 
-function Get-SnapShotOverview {
-  Get-VM | Get-SnapShot | Format-Table name, VM, Created, SizeGB -AutoSize
-}
- 
-Function Get-VMConnectedIso {
- 
-  Get-VM | Where-Object { $_ | Get-CDDrive | Where-Object { $_.ConnectionState.Connected -eq "true" -And $_.ISOPath -Like "*.iso*" } } | Select-Object Name, @{Name = ".ISO Path"; Expression = { (Get-CDDrive $_).isopath } }
-}
- 
-function Set-VMNotes {
-  $VM = Read-Host -Prompt 'Enter the Virtual Machine name'
-  $Notes = Read-Host -Prompt 'Enter the notes for the VM'
-  Set-VM -VM $VM -Notes $Notes
-}
- 
-function Get-VMToolsVersion {
-  $VM = Read-Host -Prompt 'Enter the Virtual Machine name'
-   (Get-VM $VM).Guest.ToolsVersion
-}
-
-function Add-VMtagProperty {
-  New-VIProperty -Name Tag -ObjectType VirtualMachine -Value { Get-TagAssignment -Entity $args[0] | Select-Object -ExpandProperty Tag }
-}
- 
-## End VMware PowerCli
-   
+## Edit Hosts File   
 function Edit-HostsFile {
   param($ComputerName = $env:COMPUTERNAME)
    
   Start-Process notepad.exe -ArgumentList \\$ComputerName\admin$\System32\drivers\etc\hosts -Verb RunAs
 }
- 
+
 
 ## Test SSL Protocols ##
-
 <#
  .DESCRIPTION
    Outputs the SSL protocols that the client is able to successfully use to connect to a server.
@@ -245,7 +145,6 @@ function Test-SslProtocols {
   }
 }
 
-## Test SSL Protocols End ##
 
 ## Get-MailDomain Info
 ##
@@ -326,7 +225,6 @@ function Get-MailDomainInfo {
       
 }
 
-## Get-MailDomainInfo End
 
 ## Search EvenLog
 ##
@@ -451,7 +349,6 @@ function Search-Eventlog {
   }
 }
 
-## Search EventLog End
 
 # Functions End #
 
