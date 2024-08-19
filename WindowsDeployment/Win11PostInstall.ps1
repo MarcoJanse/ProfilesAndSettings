@@ -8,11 +8,12 @@
 .NOTES
   Win11PostInstall.ps1
   Marco Janse
-  v1.1
-  2022-12-17
+  v2.0
+  2024-08-19
 
   Version History:
 
+  2.0 - Updated to Windows 11 23H2 and updated apps
   1.1 - Added apps
   1.0 - Tested version on my work laptop
   0.1 - Initial draft
@@ -33,9 +34,9 @@ if  ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion
     exit
  }
 
-## Check if OS is 22H2 build
+## Check if OS is 23H2 build
 
-if  ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name DisplayVersion).DisplayVersion -ne '22H2') {
+if  ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name DisplayVersion).DisplayVersion -ne '23H2') {
     Write-Output "This Windows version build is not 22H2, and therefore will not proceed"
     exit
  }
@@ -50,34 +51,76 @@ wsl --install
 ### Hashtable with apps
 
 $apps = @(
+    # .NET SDK
+    @{ name = "Microsoft.DotNet.SDK.8" },
+    # 7Zip
     @{ name = "7zip.7zip" },
-    @{ name = "Apple.iTunes" },
+    # Docker Desktop
     @{ name = "Docker.DockerDesktop" },
+    # paint.net
+    @{ name = "dotPDN.PaintDotNet" },
+    # Dropbox
     @{ name = "dropbox.dropbox" },
-    @{ name = "flux.flux" },
+    # Foxit PDF Reader
     @{ name = "Foxit.FoxitReader" },
+    # Total Commander
+    @{ name = "Ghisler.TotalCommander" },
+    # GIMP
+    @{ name = "GIMP.GIMP" },
+    # Git
     @{ name = "git.git" },
+    # GNU Privacy Guard
+    @{ name = "GnuPG.GnuPG" },
+    # Gpg4win
     @{ name = "GnuPG.Gpg4win" },
+    # Google Chrome
     @{ name = "Google.Chrome" },
+    # TreeSize Free
     @{ name = "JAMSoftware.TreeSize.Free" },
+    # Draw.io
     @{ name = "JGraph.Draw"},
+    # Oh My Posh
     @{ name = "JanDeDobbeleer.OhMyPosh" },
+    # KeePassXC
     @{ name = "KeePassXCTeam.KeePassXC" },
-    @{ name = "Microsoft.AzureCLI" },
+    # Azure Functions Core Tools
+    @{ name = "Microsoft.Azure.FunctionsCoreTools" },
+    # Microsoft Azure Storage Explorer
     @{ name = "Microsoft.AzureStorageExplorer" },
+    # Microsoft Azure CLI
+    @{ name = "Microsoft.AzureCLI" },
+    # Bicep CLI
     @{ name = "Microsoft.Bicep" },
-    @{ name = "Microsoft.GitCredentialManagerCore" },
+    # Microsoft Dev Home
+    @{ name = "Microsoft.DevHome" },
+    # PowerToys
     @{ name = "Microsoft.PowerToys" },
+    # Sqlcmd Tools
+    @{ name = "Microsoft.SqlCmd" },
+    # SQL Server Management Studio
     @{ name = "Microsoft.SQLServerManagementStudio" },
+    # Visual Studio Code
     @{ name = "Microsoft.VisualStudioCode" },
+    # Windows Terminal
+    @{ name = "Microsoft.WindowsTerminal" },
+    # Winget Create
+    @{ name = "Microsoft.WingetCreate" },
+    # FlashFXP
     @{ name = "OpenSight.FlashFXP" },
+    # Postman
     @{ name = "Postman.Postman"},
+    # Notepad3
     @{ name = "Rizonesoft.Notepad3" },
+    # Sonos S2 Controller
     @{ name = "Sonos.Controller" },
+    # WinSCP
     @{ name = "WinSCP.WinSCP" },
+    # Yubico Authenticator
     @{ name = "Yubico.Authenticator" },
+    # YubiKey Manager
     @{ name = "Yubico.YubikeyManager" },
-    @{ name = "WhatsApp.WhatsApp"}
+    # YubiKey Smart Card Minidriver
+    @{ name = "Yubico.YubiKeySmartCardMinidriver" }
 )
 
 Write-Output "Installing application using WinGet"
