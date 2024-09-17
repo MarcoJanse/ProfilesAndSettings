@@ -1,11 +1,12 @@
 <#
   PowerShell 7 Profile
   Marco Janse
-  v4.0
-  2024-06-14
+  v4.1
+  2024-09-17
 
   Version History:
 
+  4.1 - Add function Find-PsModuleUpdates
   4.0 - Refactor:
     - Remove PowerShellGet related functions Find-ModuleUpdates/Remove-OldModules, as PS7 now uses PSResourceGet
     - Remove PowerCli related functions, as I don't use PowerCli anymore
@@ -142,6 +143,36 @@ function Test-SslProtocols {
       }
     }
     [PSCustomObject] $ProtocolStatus
+  }
+}
+
+function Find-PsModuleUpdates {
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $false)]
+    [ValidateSet('CurrentUser', 'AllUsers')]
+    [string]$Scope = 'AllUsers'
+  )
+
+  begin {
+    Write-Verbose "starting $($MyInvocation.MyCommand.Name)"
+  }
+  
+  process {
+    # Get all installed modules
+    $installedModules = Get-PSResource -Scope AllUsers
+
+    foreach ($module in $installedModules) {
+      $latestVersion = Find-PSResource -Name $module.Name | Select-Object -ExpandProperty Version
+  
+      if ($module.Version -lt $latestVersion) {
+          Write-Output "Update available for $($module.Name): Installed version $($module.Version), Latest version $latestVersion"
+      }
+    }
+  }
+  
+  end {
+    Write-Verbose "ending $($MyInvocation.MyCommand.Name)"
   }
 }
 
