@@ -1,11 +1,13 @@
 <#
   PowerShell 7 Profile
   Marco Janse
-  v4.1
-  2024-09-17
+  v4.2
+  2024-09-30
 
   Version History:
 
+  4.2 - Add function Uninstall-OldPsResourceModules
+      - Updated Find-PsModuleUpdates to exclude prerelease modules
   4.1 - Add function Find-PsModuleUpdates
   4.0 - Refactor:
     - Remove PowerShellGet related functions Find-ModuleUpdates/Remove-OldModules, as PS7 now uses PSResourceGet
@@ -160,7 +162,7 @@ function Find-PsModuleUpdates {
   
   process {
     # Get all installed modules
-    $installedModules = Get-PSResource -Scope AllUsers
+    $installedModules = Get-PSResource -Scope AllUsers | Where-Object { -not $_.IsPrerelease }
 
     foreach ($module in $installedModules) {
       $latestVersion = Find-PSResource -Name $module.Name | Select-Object -ExpandProperty Version
@@ -174,6 +176,87 @@ function Find-PsModuleUpdates {
   end {
     Write-Verbose "ending $($MyInvocation.MyCommand.Name)"
   }
+}
+
+function Uninstall-OldPsResourceModules {
+  [CmdletBinding(SupportsShouldProcess=$true, ConfirmImpact="Medium")]
+  param (
+      # Parameter to specify scope, default to 'AllUsers'
+      [Parameter()]
+      [ValidateSet("CurrentUser", "AllUsers")]
+      [string]$Scope = 'AllUsers'
+  )
+
+  # Get all installed modules in the specified scope
+  $allModules = Get-PSResource -Scope $Scope | Where-Object { -not $_.IsPrerelease }
+
+  Write-Verbose "Retrieved all installed modules in the $Scope scope."
+
+  # Group modules by name and find older versions
+  $modulesToUninstall = $allModules | Group-Object -Property Name | ForEach-Object {
+      $group = $_.Group | Sort-Object -Property Version -Descending
+      $olderVersions = $group[1..($group.Count - 1)]  # Older versions to uninstall
+      $olderVersions
+  }
+
+  # Separate Az.* modules for special handling
+  $azModules = $modulesToUninstall | Where-Object { $_.Name -like 'Az.*' }
+  # Separate Microsoft.Graph.* modules for special handling
+  $graphModules = $modulesToUninstall | Where-Object { $_.Name -like 'Microsoft.Graph.*' }
+  # Separate non-Az and Graph modules for special handling
+  $nonDependentModules = $modulesToUninstall | Where-Object { $_.Name -notlike 'Az.*' -and $_.Name -notlike 'Microsoft.Graph.*' }
+
+  Write-Verbose "Non-dependent modules and modules with dependencies separated for special handling."
+
+  # Uninstall all older non-dependent modules
+  foreach ($module in $nonDependentModules) {
+      if ($PSCmdlet.ShouldProcess("$($module.Name) version $($module.Version)", "Uninstall")) {
+          Write-Verbose "Uninstalling module $($module.Name) version $($module.Version)"
+          Uninstall-PSResource -Name $module.Name -Version $module.Version -Scope $Scope
+      }
+  }
+
+  # Handle Az.* modules, excluding Az.Accounts for now
+  $azAccounts = $azModules | Where-Object { $_.Name -eq 'Az.Accounts' }
+  $otherAzModules = $azModules | Where-Object { $_.Name -ne 'Az.Accounts' }
+
+  # Uninstall other Az.* modules first
+  foreach ($module in $otherAzModules) {
+      if ($PSCmdlet.ShouldProcess("$($module.Name) version $($module.Version)", "Uninstall")) {
+          Write-Verbose "Uninstalling Az module $($module.Name) version $($module.Version)"
+          Uninstall-PSResource -Name $module.Name -Version $module.Version -Scope $Scope
+      }
+  }
+
+  # Finally, uninstall older versions of Az.Accounts
+  foreach ($module in $azAccounts) {
+      if ($PSCmdlet.ShouldProcess("Az.Accounts version $($module.Version)", "Uninstall")) {
+          Write-Verbose "Uninstalling Az.Accounts version $($module.Version)"
+          Uninstall-PSResource -Name $module.Name -Version $module.Version -Scope $Scope
+      }
+  }
+
+  # Handle Microsoft.Graph.* modules
+  $graphAuthentication = $graphModules | Where-Object { $_.Name -eq 'Microsoft.Graph.Authentication' }
+  $otherGraphModules = $graphModules | Where-Object { $_.Name -ne 'Microsoft.Graph.Authentication' }
+
+  # Uninstall other Microsoft.Graph.* modules first
+  foreach ($module in $otherGraphModules) {
+      if ($PSCmdlet.ShouldProcess("$($module.Name) version $($module.Version)", "Uninstall")) {
+          Write-Verbose "Uninstalling Microsoft.Graph module $($module.Name) version $($module.Version)"
+          Uninstall-PSResource -Name $module.Name -Version $module.Version -Scope $Scope
+      }
+  }
+
+  # Finally, uninstall older versions of Microsoft.Graph.Authentication
+  foreach ($module in $graphAuthentication) {
+      if ($PSCmdlet.ShouldProcess("Microsoft.Graph.Authentication version $($module.Version)", "Uninstall")) {
+          Write-Verbose "Uninstalling Microsoft.Graph.Authentication version $($module.Version)"
+          Uninstall-PSResource -Name $module.Name -Version $module.Version -Scope $Scope
+      }
+  }
+
+  Write-Verbose "Completed uninstallation of all older versions."
 }
 
 
