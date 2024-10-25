@@ -86,7 +86,7 @@ $apps = @(
     # Azure Functions Core Tools
     @{ name = "Microsoft.Azure.FunctionsCoreTools" },
     # Microsoft Azure Storage Explorer
-    @{ name = "Microsoft.AzureStorageExplorer" },
+    @{ name = "Microsoft.Azure.StorageExplorer" },
     # Microsoft Azure CLI
     @{ name = "Microsoft.AzureCLI" },
     # Bicep CLI
