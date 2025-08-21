@@ -1,11 +1,12 @@
 <#
   PowerShell 7 Profile
   Marco Janse
-  v5.0
+  v5.1
   2025-08-21
 
   Version History:
 
+  5.1 - re-add visual check
   5.0 - Back to basics - less is more
   4.2 - Add function Uninstall-OldPsResourceModules
       - Updated Find-PsModuleUpdates to exclude prerelease modules
@@ -47,3 +48,6 @@ Import-Module Terminal-Icons
 Set-PSReadLineKeyHandler -Chord UpArrow -Function HistorySearchBackward
 Set-PSReadLineOption -PredictionSource HistoryAndPlugin
 Set-PSReadLineOption -PredictionViewStyle InlineView
+
+## Visual check
+Write-Host -ForegroundColor Yellow "PowerShell 7 Profile Loaded"
