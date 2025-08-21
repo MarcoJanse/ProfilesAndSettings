@@ -1,11 +1,12 @@
 <#
   PowerShell 7 VSCode Profile
   Marco Janse
-  v4.0
-  2024-06-14
+  v5.0
+  2025-08-21
 
   Version History:
 
+  5.0 - Back to basics - less is more
   4.0 - Refactor to make it minimalistic
   3.0 - Git var updates to Dev drive
   2.9 - Revert back to Inline view of PSReadLine predictionViewStyle
@@ -21,33 +22,22 @@
   1.0 - first version for PowerShell 7
 #>
 
-# Aliases #
-
 # Custom Variables #
+
 $Git = 'X:\Git\'
 $GitHub = 'X:\Git\GitHub\MarcoJanse\'
 $AzDevOps = 'X:\Git\AzDevOps'
 
-# Modules #
-
-# Functions #
-
-# Console #
-
 ## Posh and git
 
-### TEMPORARY DISABLE FOR https://github.com/microsoft/vscode/issues/214386
-# Import-Module posh-git
-# oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\slim.omp.json" | Invoke-Expression
-# Import-Module Terminal-Icons
+Import-Module posh-git
+oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\dracula.omp.json" | Invoke-Expression
+Import-Module Terminal-Icons
 
 ## PSReadline
 Set-PSReadLineKeyHandler -Chord UpArrow -Function HistorySearchBackward
 Set-PSReadLineOption -PredictionSource HistoryAndPlugin
 Set-PSReadLineOption -PredictionViewStyle InlineView
-
-## AzToolsPredictor
-Import-Module Az.Tools.Predictor
 
 # Visual check
 Write-Host -ForegroundColor Yellow "PowerShell 7 VSCode Profile Loaded"
