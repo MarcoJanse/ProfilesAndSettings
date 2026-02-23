@@ -1,11 +1,12 @@
 <#
   PowerShell 7 VSCode Profile
   Marco Janse
-  v5.0
-  2025-08-21
+  v5.5
+  2026-02-23
 
   Version History:
 
+  5.5 - Updated Oh-My-Posh to the latest version and 
   5.0 - Back to basics - less is more
   4.0 - Refactor to make it minimalistic
   3.0 - Git var updates to Dev drive
@@ -31,7 +32,7 @@ $AzDevOps = 'X:\Git\AzDevOps'
 ## Posh and git
 
 Import-Module posh-git
-oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\dracula.omp.json" | Invoke-Expression
+oh-my-posh init pwsh --config 'kali' | Invoke-Expression
 Import-Module Terminal-Icons
 
 ## PSReadline

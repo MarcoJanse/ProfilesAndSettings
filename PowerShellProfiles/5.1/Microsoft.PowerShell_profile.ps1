@@ -1,11 +1,12 @@
 <#
   Windows PowerShell Profile
   Marco Janse
-  v3.0
-  2025-08-21
+  v3.5
+  2026-02-23
 
   Version History:
 
+  3.5 - Updated Oh-My-Posh to the latest version and changed theme to Atomic
   3.0 - Back to basics - less is more
   2.0 - Optimized and stripped version for Windows PowerShell
   1.0 - Initial profile based on PS7 profile
@@ -22,7 +23,7 @@ $AzDevOps = 'X:\Git\AzDevOps'
 ## Posh and git
 
 Import-Module posh-git
-oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\atomic.omp.json" | Invoke-Expression
+oh-my-posh init pwsh --config 'atomic' | Invoke-Expression
 Import-Module Terminal-Icons
 
 ## PSReadline

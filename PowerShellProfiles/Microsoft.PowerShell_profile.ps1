@@ -1,11 +1,12 @@
 <#
   PowerShell 7 Profile
   Marco Janse
-  v5.1
-  2025-08-21
+  v5.5
+  2026-02-23
 
   Version History:
 
+  5.5 - Updated Oh-My-Posh to the latest version and changed theme to Atomic
   5.1 - re-add visual check
   5.0 - Back to basics - less is more
   4.2 - Add function Uninstall-OldPsResourceModules
@@ -41,7 +42,7 @@ $AzDevOps = 'X:\Git\AzDevOps'
 ## Posh and git
 
 Import-Module posh-git
-oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\atomic.omp.json" | Invoke-Expression
+oh-my-posh init pwsh --config 'atomic' | Invoke-Expression
 Import-Module Terminal-Icons
 
 ## PSReadline
